@@ -582,6 +582,7 @@ class WebsiteSupportTicketCompose(models.Model):
     subject = fields.Char(string="Subject", readonly="True")
     body = fields.Text(string="Message Body")
     template_id = fields.Many2one('mail.template', string="Mail Template", domain="[('model_id','=','website.support.ticket'), ('built_in','=',False)]")
+    attachment_ids = fields.One2many('ir.attachment', 'res_id', domain=[('res_model', '=', 'website.support.ticket.compose')], string="Media Attachments")
     approval = fields.Boolean(string="Approval")
     planned_time = fields.Datetime(string="Planned Time")
 
@@ -616,6 +617,7 @@ class WebsiteSupportTicketCompose(models.Model):
         values = email_wrapper.generate_email([self.id])[self.id]
         values['model'] = "website.support.ticket"
         values['res_id'] = self.ticket_id.id
+        values['attachment_ids'] = self.attachment_ids
         send_mail = self.env['mail.mail'].create(values)
         send_mail.send()
 

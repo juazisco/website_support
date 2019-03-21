@@ -48,6 +48,8 @@
         'static/description/4.jpg',
         'static/description/5.jpg',
         'static/description/6.jpg',
+        'static/description/icon.png',
     ],
     'installable': True,
+    'application': True
 }

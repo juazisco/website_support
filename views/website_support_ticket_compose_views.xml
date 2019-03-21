@@ -17,6 +17,13 @@
                 <group>
                     <field name="template_id" context="{'default_model':'website.support.ticket', 'default_body_html': body}"/>
                 </group>
+                <group>
+                    <field name="attachment_ids">
+                        <tree>
+                            <field name="datas_fname"/>
+                        </tree>
+                    </field>
+                </group>
                 <footer>
                     <button string="Send" name="send_reply" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-default" special="cancel"/>
