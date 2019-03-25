@@ -16,26 +16,34 @@
                     <button type="object" name="request_approval" string="Request Approval"/>
                 </header>
                 <sheet>
-                    <div class="oe_title">
+                    <group>
                         <label for="subject" class="oe_edit_only"/>
                         <h1><field name="subject"/></h1>
-                    </div>
+                        <group  class="oe_right" >
+                            <h3><field name="ticket_number" style="width:200px;"/></h3>
+                        </group>
+
+                    </group>
+
+
+
+
                     <group>
                         <group>
-                            <field name="ticket_number"/>
                             <field name="channel"/>
                             <field name="priority_id"/>
                             <field name="tag_ids" widget="many2many_tags"/>
                             <field name="category_id"/>
                             <field name="sub_category_id" domain="[('parent_category_id','=',category_id)]"/>
+                            <field name="user_id" domain="[('share','=',False)]"/>
                             <field name="state_id"/>
+                            <field name="approval_id"/>
                         </group>
                         <group>
-                            <field name="user_id" domain="[('share','=',False)]"/>
-                            <field name="partner_id"/>
+                            <field name="partner_id" attrs="{'invisible':True}"/>
                             <field name="person_name"/>
                             <field name="email"/>
-                            <field name="approval_id"/>
+                            <field name="phone"/>
                             <field name="support_rating" readonly="1"/>
                             <field name="close_time"/>
                             <field name="closed_by_id"/>
@@ -58,11 +66,7 @@
                         </page>
                         <page string="Attachments">
                             <group>
-                                <field name="attachment_ids">
-                                    <tree>
-                                        <field name="datas_fname"/>
-                                    </tree>
-                                </field>
+                                <field name="attachment_ids" widget="many2many_binary"/>
                             </group>
                         </page>
                         <page string="SLA">
@@ -150,10 +154,9 @@
                 <field name="create_date"/>
                 <field name="ticket_number"/>
                 <field name="priority_id"/>
-                <field name="parent_company_id"/>
+                <field name="state_id"/>
                 <field name="person_name"/>
                 <field name="category_id"/>
-                <field name="state_id"/>
                 <field name="subject"/>
                 <field name="sla_active"/>
                 <field name="sla_timer" widget="float_time"/>

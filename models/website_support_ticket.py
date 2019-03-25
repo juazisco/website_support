@@ -57,6 +57,7 @@ class WebsiteSupportTicket(models.Model):
     user_id = fields.Many2one('res.users', string="Assigned User")
     person_name = fields.Char(string='Person Name')
     email = fields.Char(string="Email")
+    phone = fields.Char(string="Phone")
     support_email = fields.Char(string="Support Email")
     category_id = fields.Many2one('website.support.ticket.category', string="Category", track_visibility='onchange')
     sub_category_id = fields.Many2one('website.support.ticket.subcategory', string="Sub Category")
@@ -65,8 +66,7 @@ class WebsiteSupportTicket(models.Model):
     state_id = fields.Many2one('website.support.ticket.state', group_expand='_read_group_state', default=_default_state,
                             string="State")
     conversation_history_ids = fields.One2many('website.support.ticket.message', 'ticket_id', string="Conversation History")
-    attachment_ids = fields.One2many('ir.attachment', 'res_id', domain=[('res_model', '=', 'website.support.ticket')],
-                                     string="Media Attachments")
+    attachment_ids = fields.Many2many('ir.attachment', 'website_support_ticket_attachment_rel','website_support_ticket_id', 'attachment_id', string='Media Attachments',domain=[('res_model', '=', 'website.support.ticket')])
     unattended = fields.Boolean(string="Unattended", compute="_compute_unattend", store="True",
                                 help="In 'Open' state or 'Customer Replied' state taken into consideration name changes")
     portal_access_key = fields.Char(string="Portal Access Key")
@@ -582,7 +582,6 @@ class WebsiteSupportTicketCompose(models.Model):
     subject = fields.Char(string="Subject", readonly="True")
     body = fields.Text(string="Message Body")
     template_id = fields.Many2one('mail.template', string="Mail Template", domain="[('model_id','=','website.support.ticket'), ('built_in','=',False)]")
-    attachment_ids = fields.One2many('ir.attachment', 'res_id', domain=[('res_model', '=', 'website.support.ticket.compose')], string="Media Attachments")
     approval = fields.Boolean(string="Approval")
     planned_time = fields.Datetime(string="Planned Time")
 

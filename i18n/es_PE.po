@@ -1928,6 +1928,11 @@ msgid "Person Name"
 msgstr "Nombre de la persona"
 
 #. module: website_support
+#: model:ir.model.fields,field_description:website_support.field_website_support_ticket__phone
+msgid "Phone"
+msgstr "Teléfono"
+
+#. module: website_support
 #: model:ir.model.fields,field_description:website_support.field_website_support_ticket__planned_time
 #: model:ir.model.fields,field_description:website_support.field_website_support_ticket_compose__planned_time
 msgid "Planned Time"
