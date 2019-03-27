@@ -9,6 +9,7 @@ from dateutil import tz
 import logging
 _logger = logging.getLogger(__name__)
 
+
 class WebsiteSupportTicket(models.Model):
 
     _name = "website.support.ticket"
@@ -66,7 +67,8 @@ class WebsiteSupportTicket(models.Model):
     state_id = fields.Many2one('website.support.ticket.state', group_expand='_read_group_state', default=_default_state,
                             string="State")
     conversation_history_ids = fields.One2many('website.support.ticket.message', 'ticket_id', string="Conversation History")
-    attachment_ids = fields.Many2many('ir.attachment', 'website_support_ticket_attachment_rel','website_support_ticket_id', 'attachment_id', string='Media Attachments',domain=[('res_model', '=', 'website.support.ticket')])
+    attachment_ids = fields.One2many('ir.attachment', 'res_id', domain=[('res_model', '=', 'website.support.ticket')],
+                                     string="Media Attachments")
     unattended = fields.Boolean(string="Unattended", compute="_compute_unattend", store="True",
                                 help="In 'Open' state or 'Customer Replied' state taken into consideration name changes")
     portal_access_key = fields.Char(string="Portal Access Key")
@@ -305,12 +307,15 @@ class WebsiteSupportTicket(models.Model):
 
     @api.model
     def create(self, vals):
+
         # Get next ticket number from the sequence
         vals['ticket_number'] = self.env['ir.sequence'].next_by_code('website.support.ticket')
 
         new_id = super(WebsiteSupportTicket, self).create(vals)
 
-        new_id.portal_access_key = randint(1000000000,2000000000)
+        print("message_follower_ids: ", new_id.message_follower_ids)
+
+        new_id.portal_access_key = randint(1000000000, 2000000000)
 
         #If the customer has a dedicated support user then automatically assign them
         if new_id.partner_id.dedicated_support_user_id:
@@ -572,6 +577,7 @@ class WebsiteSupportTicketClose(models.TransientModel):
         if setting_auto_send_survey:
             self.ticket_id.send_survey()
 
+
 class WebsiteSupportTicketCompose(models.Model):
 
     _name = "website.support.ticket.compose"
@@ -584,16 +590,19 @@ class WebsiteSupportTicketCompose(models.Model):
     template_id = fields.Many2one('mail.template', string="Mail Template", domain="[('model_id','=','website.support.ticket'), ('built_in','=',False)]")
     approval = fields.Boolean(string="Approval")
     planned_time = fields.Datetime(string="Planned Time")
+    attachment_ids = fields.Many2many(comodel_name='ir.attachment', string='Attachments')
 
     @api.onchange('template_id')
     def _onchange_template_id(self):
         if self.template_id:
             values = self.env['mail.compose.message'].generate_email_for_composer(self.template_id.id, [self.ticket_id.id])[self.ticket_id.id]
-            self.body = values['body']
+            self.update({
+                'body': values['body'],
+                'attachment_ids': [(6, 0, self.template_id.attachment_ids.ids)]
+            })
 
     @api.one
     def send_reply(self):
-
         #Change the approval state before we send the mail
         if self.approval:
             #Change the ticket state to awaiting approval
@@ -616,7 +625,7 @@ class WebsiteSupportTicketCompose(models.Model):
         values = email_wrapper.generate_email([self.id])[self.id]
         values['model'] = "website.support.ticket"
         values['res_id'] = self.ticket_id.id
-        values['attachment_ids'] = self.attachment_ids
+        values['attachment_ids'] = [(6, 0, self.attachment_ids.ids)]
         send_mail = self.env['mail.mail'].create(values)
         send_mail.send()
 
@@ -634,3 +643,16 @@ class WebsiteSupportTicketCompose(models.Model):
             #Change the ticket state to staff replied
             staff_replied = self.env['ir.model.data'].get_object('website_support','website_ticket_state_staff_replied')
             self.ticket_id.state_id = staff_replied.id
+
+
+class IrAttachment(models.Model):
+    _inherit = 'ir.attachment'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        model = self.env.context.get('params', {}).get('model')
+        if model:
+            for val in vals_list:
+                if not val.get('res_model', False):
+                    val.update({'res_model': model})
+        return super(IrAttachment, self).create(vals_list)

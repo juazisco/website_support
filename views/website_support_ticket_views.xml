@@ -24,10 +24,6 @@
                         </group>
 
                     </group>
-
-
-
-
                     <group>
                         <group>
                             <field name="channel"/>
@@ -66,7 +62,16 @@
                         </page>
                         <page string="Attachments">
                             <group>
-                                <field name="attachment_ids" widget="many2many_binary"/>
+                                <field name="attachment_ids"  context="{'default_res_id': id, 'default_res_model': 'website.support.ticket'}">
+                                <tree editable="bottom" default_order='write_date'>
+                                        <field name="res_model" invisible="1"/>
+                                        <field name="res_id" invisible="1"/>
+                                        <field name="name" invisible="1"/>
+                                        <field name="datas" filename="name"  widget="binary" />
+                                        <field name="create_uid" readonly="1"/>
+                                        <field name="write_date" readonly="1"/>
+                                    </tree>
+                                </field>
                             </group>
                         </page>
                         <page string="SLA">
@@ -91,7 +96,7 @@
         <field name="name">website.support.ticket kanban view</field>
         <field name="model">website.support.ticket</field>
         <field name="arch" type="xml">
-            <kanban class="o_res_partner_kanban" default_group_by="state" create="false">
+            <kanban class="o_res_partner_kanban" default_group_by="state_id" create="false">
                 <field name="subject"/>
                 <field name="priority_id"/>
                 <field name="state_id"/>

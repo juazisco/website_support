@@ -675,6 +675,7 @@ msgstr "Conteo de archivos adjuntos"
 
 #. module: website_support
 #: model_terms:ir.ui.view,arch_db:website_support.website_support_ticket_view_form
+#: model:ir.model.fields,field_description:website_support.field_website_support_ticket__compose_main_attachment_id
 msgid "Attachments"
 msgstr "Adjuntos"
 
