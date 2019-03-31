@@ -16,11 +16,11 @@
 
         <function id="default_max_ticket_attachments"
             model="ir.default" name="set"
-            eval="('website.support.settings', 'max_ticket_attachments', 2 )"/>
+            eval="('website.support.settings', 'max_ticket_attachments', 5 )"/>
 
         <function id="default_max_ticket_attachment_filesize"
             model="ir.default" name="set"
-            eval="('website.support.settings', 'max_ticket_attachment_filesize', 500 )"/>
+            eval="('website.support.settings', 'max_ticket_attachment_filesize', 15000 )"/>
 
     </data>     
 </odoo>

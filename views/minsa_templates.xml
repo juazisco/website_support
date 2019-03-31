@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="support_ticket_survey" model="mail.template">
+        <field name="name">Encuesta del Ticket atendido</field>
+        <field name="model_id" ref="model_website_support_ticket"></field>
+        <field name="email_from"><![CDATA[${object.company_id.name} <${object.company_id.email}>]]></field>
+        <field name="email_to">${object.email|safe}</field>
+        <field name="subject">Encuesta de satisfacción de la atención del (#${object.ticket_number or object.id})</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="built_in" eval="True"/>
+        <field name="body_html"><![CDATA[
+            % if object.person_name :
+                <p>Estimado(a) ${object.person_name},</p>
+            % endif
+            <p>Nos gustaría tener su opinión acerca de la atención brindada, por favor ingrese a nuestra encuesta </p>
+            <p><a href="/support/survey/${object.portal_access_key}">AQUI!</a></p>
+
+<table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+    <tbody>
+        <tr>
+            <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                <br>
+                <br>
+            </td>
+            <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                <span class="fa fa-envelope-o"></span>
+                <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                <br>
+                <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                <br>
+                <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                <br>
+            </td>
+        </tr>
+    </tbody>
+</table>
+            <table class="table table-bordered">
+    <tbody>
+        <tr>
+            <td>
+            <b>Número de Ticket:</b> ${object.ticket_number or object.id}<br/>
+            <b>Categoría del Ticket:</b>
+            % if object.category_id.name :
+                ${object.category_id.name}
+            % endif
+            <br/>
+            <b>Descripción del Ticket:</b><br/>
+            ${object.description|safe}
+            </td>
+        </tr>
+    </tbody>
+</table>
+        ]]>
+        </field>
+    </record>
+
+        <record id="support_ticket_sla_alert" model="mail.template">
+            <field name="name">Alerta del SLA del Ticket</field>
+            <field name="model_id" ref="model_website_support_ticket"></field>
+            <field name="email_from"><![CDATA[${object.company_id.name} <${object.company_id.email}>]]></field>
+            <field name="subject">Alerta SLA</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                <p>Estimado(a) _user_name_,</p>
+                %if object.sla_timer > 0:
+                    <p>Tienes ${object.sla_timer_format} horas disponibles para atender el Ticket</p>
+                %endif
+                %if object.sla_timer < 0:
+                    <p>El SLA actualmente es  ${object.sla_timer_format} horas atrazado</p>
+                %endif
+                <p>Nombre de la Persona: ${object.person_name}</p>
+                <p>Categoría: ${object.category_id.name}</p>
+                <p>Asunto: ${object.subject}</p>
+                <p>${object.description|safe}</p>
+                <table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+    <tbody>
+        <tr>
+            <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                <br>
+                <br>
+            </td>
+            <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                <span class="fa fa-envelope-o"></span>
+                <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                <br>
+                <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                <br>
+                <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                <br>
+            </td>
+        </tr>
+    </tbody>
+</table>
+            ]]>
+            </field>
+        </record>
+        
+        <record id="new_support_ticket_category" model="mail.template">
+            <field name="name">Nuevo Ticket (Categoría)</field>
+            <field name="model_id" ref="model_website_support_ticket"></field>
+            <field name="email_from"><![CDATA[${object.company_id.name} <${object.company_id.email}>]]></field>
+            <field name="subject">Nuevo Ticket para su Categoría</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                <p>Estimado(a) _user_name_,</p>
+                <p>Un nuevo Ticket ha sido Creado en la categoría que tiene asignado(a)</p>
+                <p>Nombre de la Persona: ${object.person_name}</p>
+                <p>Categoría: ${object.category_id.name}</p>
+                <p>Asunto: ${object.subject}</p>
+                <p>${object.description|safe}</p>
+                <p>Click <a href="_ticket_url_">AQUI</a> para ver el Ticket en línea</p>
+
+                <table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+                <tbody>
+                    <tr>
+                        <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                            <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                            <br>
+                            <br>
+                        </td>
+                        <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                            <span class="fa fa-envelope-o"></span>
+                            <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                            <br>
+                            <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                            <br>
+                            <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                            <br>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            ]]>
+            </field>
+        </record>
+
+        <record id="support_ticket_user_change" model="mail.template">
+            <field name="name">Ticket Cambio de Usuario</field>
+            <field name="model_id" ref="model_website_support_ticket"></field>
+            <field name="email_from"><![CDATA[${object.company_id.name} <${object.company_id.email}>]]></field>            
+            <field name="subject">Un Ticket ha sido asignado a usted.</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                <p>Estimado(a) _user_name_,</p>
+                <p>Un Ticket ha sido asignado a usted, aquí los detalles.</p>
+
+                <table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody>
+                        <tr>
+                            <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                                <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                                <br>
+                                <br>
+                            </td>
+                            <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                                <span class="fa fa-envelope-o"></span>
+                                <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                                <br>
+                                <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                                <br>
+                                <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                                <br>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+               <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <b>Número de Ticket:</b> ${object.ticket_number or object.id}<br/>
+                                <b>Categoría del Ticket:</b>
+                                % if object.category_id.name :
+                                    ${object.category_id.name}
+                                % endif
+                                <br/>
+                                <b>Descripción del Ticket:</b><br/>
+                                ${object.description|safe}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            ]]>
+            </field>
+        </record>
+
+        <record id="new_support_ticket_category_change" model="mail.template">
+            <field name="name">Cambio de categoría en el Ticket</field>
+            <field name="model_id" ref="model_website_support_ticket"></field>
+            <field name="email_from"><![CDATA[${object.company_id.name} <${object.company_id.email}>]]></field>            
+            <field name="email_to">${object.email|safe}</field>
+            <field name="subject">Su Ticket ha sido actualizado</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                <p>Estimado(a) ${object.person_name},</p>
+                <p>Su Ticket ha sido actualizado a esta nueva Categoría '${object.category_id.name}' </p>
+                <table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody>
+                        <tr>
+                            <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                                <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                                <br>
+                                <br>
+                            </td>
+                            <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                                <span class="fa fa-envelope-o"></span>
+                                <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                                <br>
+                                <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                                <br>
+                                <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                                <br>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <b>Número de Ticket:</b> ${object.ticket_number or object.id}<br/>
+                                <b>Categoría del Ticket:</b>
+                                % if object.category_id.name :
+                                    ${object.category_id.name}
+                                % endif
+                                <br/>
+                                <b>Descripción del Ticket:</b><br/>
+                                ${object.description|safe}
+                                </td>
+                        </tr>
+                    </tbody>
+                </table>
+            ]]>
+            </field>
+        </record>
+
+        <record id="support_ticket_closed" model="mail.template">
+            <field name="name">Ticket Cerrado</field>
+            <field name="model_id" ref="model_website_support_ticket"></field>
+            <field name="email_from"><![CDATA[${object.company_id.name} <${object.company_id.email}>]]></field>
+            <field name="email_to">${object.email|safe}</field>
+            <field name="subject">Su Ticket ha sido Cerrado</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                <p>Estimado(a) ${object.person_name},</p>
+                <p>Su ticket ha sido cerrado por nuestro equipo, aqui los comentarios finales.</p>
+                <p>${object.close_comment|safe}</p>
+                <table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody>
+                        <tr>
+                            <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                                <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                                <br>
+                                <br>
+                            </td>
+                            <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                                <span class="fa fa-envelope-o"></span>
+                                <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                                <br>
+                                <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                                <br>
+                                <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                                <br>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>
+                        <b>Número de Ticket:</b> ${object.ticket_number or object.id}<br/>
+                        <b>Categoría del Ticket</b>
+                        % if object.category_id.name :
+                            ${object.category_id.name}
+                        % endif
+                        <br/>
+                        <b>Descripción del Ticket:</b><br/>
+                        ${object.description|safe}
+                        </td>
+                        </tr>
+                    </tbody>
+                </table>
+            ]]>
+            </field>
+        </record>
+
+        <record id="support_ticket_new" model="mail.template">
+            <field name="name">Nuevo Ticket</field>
+            <field name="model_id" ref="model_website_support_ticket"></field>
+            <field name="email_from"><![CDATA[${object.company_id.name} <${object.company_id.email}>]]></field>
+            <field name="email_to">${object.email|safe}</field>
+            <field name="subject">Se ha registrado un Ticket con el asunto '${object.subject}', estaremos respondiendo en breve.</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                % if object.person_name :
+                    <p>Estimado(a) ${object.person_name},</p>
+                % endif
+                <p>Hemos registrado un Ticket de atención el cual estaremos respondiendo en breve.</p>
+                 <table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody>
+                        <tr>
+                            <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                                <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                                <br>
+                                <br>
+                            </td>
+                            <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                                <span class="fa fa-envelope-o"></span>
+                                <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                                <br>
+                                <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                                <br>
+                                <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                                <br>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <b>Ver Ticket en linea:</b> <a href="/support/portal/ticket/view/${object.portal_access_key}">here</a><br/>
+                                <b>Número de Ticket:</b> ${object.ticket_number or object.id}<br/>
+                                <b>Categoría del Ticket:</b>
+                                % if object.category_id.name :
+                                    ${object.category_id.name}
+                                % endif
+                                <br/>
+                                % if object.category_id.name :
+                                    <b>SLA:</b>
+                                    ${object.sla_id.name}
+                                % endif
+                                <br/>
+                                <b>Descripción del Ticket:</b><br/>
+                                ${object.description|safe}
+                            </td>
+                        </tr>
+                     </tbody>
+                </table>
+            ]]>
+            </field>
+        </record>
+
+        <record id="support_ticket_customer_reply_wrapper" model="mail.template">
+            <field name="name">Support Ticket Customer Reply Wrapper</field>
+            <field name="email_from"><![CDATA[${object.ticket_id.company_id.name} <${object.ticket_id.company_id.email}>]]></field>
+            <field name="reply_to">SendReplyViaSystem@example.com</field>
+            <field name="model_id" ref="model_website_support_ticket_message"></field>
+            <field name="subject">${object.ticket_id.subject}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                ${object.content|safe}
+                <table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody>
+                        <tr>
+                            <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                                <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                                <br>
+                                <br>
+                            </td>
+                            <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                                <span class="fa fa-envelope-o"></span>
+                                <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                                <br>
+                                <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                                <br>
+                                <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                                <br>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <b>Número de Ticket:</b> ${object.ticket_id.ticket_number or object.ticket_id.id}<br/>
+                                <b>Categoría del Ticket:</b> ${object.ticket_id.category_id.name or ''}<br/>
+                                % if object.ticket_id.planned_time_format :
+                                    <b>Fecha Planificada:</b> ${object.ticket_id.planned_time_format}<br/>
+                                % endif
+                                <b>Descripción del Ticket:</b><br/>
+                                ${object.ticket_id.description|safe}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            ]]>
+            </field>
+        </record>
+
+        <record id="support_ticket_reply_wrapper" model="mail.template">
+            <field name="name">Support Ticket Reply Wrapper</field>
+            <field name="model_id" ref="model_website_support_ticket_compose"></field>
+            <field name="subject">${object.subject}</field>
+            <field name="email_from"><![CDATA[${object.ticket_id.company_id.name} <${object.ticket_id.company_id.email}>]]></field>            
+            <field name="email_to">${object.email|safe}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                ${object.body|safe}
+
+                <table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody>
+                        <tr>
+                            <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                                <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                                <br>
+                                <br>
+                            </td>
+                            <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                                <span class="fa fa-envelope-o"></span>
+                                <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                                <br>
+                                <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                                <br>
+                                <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                                <br>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>
+                                % if object.ticket_id.portal_access_key :
+                                    <b>Ver el Ticket en linea:</b> <a href="/support/portal/ticket/view/${object.ticket_id.portal_access_key}">here</a><br/>
+                                % endif
+                                <b>Número de Ticket:</b> ${object.ticket_id.ticket_number or object.ticket_id.id}<br/>
+                                <b>Categoría del Ticket:</b> ${object.ticket_id.category_id.name or ''}<br/>
+                                % if object.ticket_id.planned_time_format :
+                                    <b>Fecha Planificada:</b> ${object.ticket_id.planned_time_format}<br/>
+                                % endif
+                                <b>Descripción del Ticket:</b><br/>
+                                ${object.ticket_id.description|safe}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            ]]>
+            </field>
+        </record>
+
+        <record id="support_ticket_reply_wrapper_user" model="mail.template">
+            <field name="name">Support Ticket Reply Wrapper (User)</field>
+            <field name="model_id" ref="model_website_support_ticket_compose"></field>
+            <field name="subject">${object.subject}</field>
+            <field name="email_from">${user.email|safe}</field>            
+            <field name="email_to">${object.email|safe}</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                ${object.body|safe}
+
+               <table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody>
+                        <tr>
+                            <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                                <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                                <br>
+                                <br>
+                            </td>
+                            <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                                <span class="fa fa-envelope-o"></span>
+                                <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                                <br>
+                                <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                                <br>
+                                <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                                <br>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>
+                                % if object.ticket_id.portal_access_key :
+                                    <b>Ver el Ticket en linea:</b> <a href="/support/portal/ticket/view/${object.ticket_id.portal_access_key}">here</a><br/>
+                                % endif
+                                <b>Número de Ticket:</b> ${object.ticket_id.ticket_number or object.ticket_id.id}<br/>
+                                <b>Categoría del Ticket:</b> ${object.ticket_id.category_id.name or ''}<br/>
+                                % if object.ticket_id.planned_time_format :
+                                    <b>Fecha Planificada:</b> ${object.ticket_id.planned_time_format}<br/>
+                                % endif
+                                <b>Descripción del Ticket:</b><br/>
+                                ${object.ticket_id.description|safe}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            ]]>
+            </field>
+        </record>
+
+        <record id="support_ticket_approval" model="mail.template">
+            <field name="name">Support Ticket Approval</field>
+            <field name="model_id" ref="model_website_support_ticket"></field>
+            <field name="email_from"><![CDATA[${object.company_id.name} <${object.company_id.email}>]]></field>
+            <field name="email_to">${object.email|safe}</field>
+            <field name="subject">Solicitud de Aprobación del Ticket (#${object.ticket_number or object.id})</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                % if object.person_name :
+                    <p>Estimado(a) ${object.person_name},</p>
+                    <br/>
+                % endif
+
+                <p>Es necesario la aprobación antes de poder continuar con la atención al Ticket, por favor seleccione la opciópn Aceptar</p>
+                <br/>
+                <p><a href="${object.approve_url}" style="color:green">Aceptar</a> | <a href="${object.disapprove_url}" style="color:red">Rechazar</a></p>
+               <table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody>
+                        <tr>
+                            <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                                <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                                <br>
+                                <br>
+                            </td>
+                            <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                                <span class="fa fa-envelope-o"></span>
+                                <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                                <br>
+                                <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                                <br>
+                                <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                                <br>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            ]]>
+            </field>
+        </record>
+
+        <record id="support_ticket_approval_user" model="mail.template">
+            <field name="name">Support Ticket Approval (User)</field>
+            <field name="model_id" ref="model_website_support_ticket"></field>
+            <field name="email_from"><![CDATA[${object.company_id.name} <${object.company_id.email}>]]></field>
+            <field name="email_to">${object.email|safe}</field>
+            <field name="subject">Support Ticket Approval (#${object.ticket_number or object.id})</field>
+            <field name="auto_delete" eval="False"/>
+            <field name="built_in" eval="True"/>
+            <field name="body_html"><![CDATA[
+                <p>Estimado(a) _user_name_,</p>
+                <p>El Indicador de aprobación del Ticket ha sido cambiado</p>
+                <p>Nombre de la Persona: ${object.person_name}</p>
+                <p>Categoría: ${object.category_id.name}</p>
+                <p>Asunto: ${object.subject}</p>
+                <p>Aprobación: ${object.approval_id.name}</p>
+                <p>${object.description|safe}</p>
+                <p>Click <a href="_ticket_url_">AQUI</a> para ver el Ticket en linea.</p>
+
+               <table class="container" style="width:450px;" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody>
+                        <tr>
+                            <td style="padding-bottom: 20px; width: 200px;" class="pb0 pt0" valign="middle" height="70">
+                                <img class="img-fluid o_we_custom_image" src="/website_support/static/src/img/logo_minsa.png" data-original-title="" title="" aria-describedby="tooltip610484" style="max-;width: 200px;">
+                                <br>
+                                <br>
+                            </td>
+                            <td style="font-size: 13px; color: rgb(24, 24, 24); font-family: Helvetica, Arial, sans-serif; padding-bottom: 20px; text-align: right; width: 257px;" class="pb0" width="40%" valign="middle" height="70">
+                                <span class="fa fa-envelope-o"></span>
+                                <a href="mailto:soporte_aplicativos@minsa.gob.pe" data-original-title="" title="" aria-describedby="tooltip455129">&nbsp;soporte_aplicativos@minsa.gob.pe</a>
+                                <br>
+                                <span class="fa fa-phone"></span> &nbsp;(01) 631-4040
+                                <br>
+                                <span class="fa fa-whatsapp"></span> &nbsp;952855203
+                                <br>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            ]]>
+            </field>
+        </record>
+
+</odoo>

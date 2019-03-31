@@ -10,7 +10,7 @@
     'data': [
         'data/ir.module.category.csv',
         'data/res.groups.xml',
-        'views/email_templates.xml',
+        'views/minsa_templates.xml',
         'views/website_support_ticket_templates.xml',
         'views/website_support_ticket_compose_views.xml',
         'views/website_support_ticket_close_views.xml',
@@ -49,6 +49,7 @@
         'static/description/5.jpg',
         'static/description/6.jpg',
         'static/description/icon.png',
+        'static/description/logo_minsa.png',
     ],
     'installable': True,
     'application': True
