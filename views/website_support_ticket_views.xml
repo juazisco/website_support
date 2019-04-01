@@ -18,7 +18,7 @@
                 <sheet >
                     <group>
                         <label for="subject" class="oe_edit_only"/>
-                        <h1><field name="subject"/></h1>
+                        <h1><field name="subject" attrs="{'required':True}"/></h1>
                         <group  class="oe_right" >
                             <h3><field name="ticket_number" style="width:200px;"/></h3>
                         </group>
@@ -28,16 +28,16 @@
                         <group>
                             <field name="channel"/>
                             <field name="priority_id"/>
-                            <field name="tag_ids" widget="many2many_tags"/>
-                            <field name="category_id"/>
-                            <field name="sub_category_id" domain="[('parent_category_id','=',category_id)]"/>
-                            <field name="user_id" domain="[('share','=',False)]" />
+                            <field name="tag_ids" widget="many2many_tags" attrs="{'required':True}"/>
+                            <field name="category_id" attrs="{'required':True}"/>
+                            <field name="sub_category_id" domain="[('parent_category_id','=',category_id)]" attrs="{'required':True}"/>
+                            <field name="user_id" domain="[('share','=',False)]" attrs="{'required':True}"/>
                             <field name="state_id"/>
                             <field name="approval_id"/>
                         </group>
                         <group>
                             <field name="partner_id" attrs="{'invisible':True}"/>
-                            <field name="person_name"/>
+                            <field name="person_name" attrs="{'required':True}"/>
                             <field name="email"/>
                             <field name="phone"/>
                             <field name="support_rating" readonly="1"/>
