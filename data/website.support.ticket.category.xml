@@ -6,8 +6,8 @@
             <field name="name">Technical Support</field>
         </record>
 
-        <record id="website_support_billing_issues" model="website.support.ticket.category">
-            <field name="name">Billing Issues</field>
+        <record id="website_support_app_support" model="website.support.ticket.category">
+            <field name="name">Soporte de Aplicaciones</field>
         </record>
             
     </data>     

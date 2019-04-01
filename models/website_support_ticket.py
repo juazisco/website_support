@@ -50,12 +50,19 @@ class WebsiteSupportTicket(models.Model):
     def _default_approval_id(self):
         return self.env['ir.model.data'].get_object('website_support', 'no_approval_required')
 
-    channel = fields.Char(string="Channel", default="Manual")
+    def _default_current_user_id(self):
+        for rec in self:
+            rec.current_user = self.env.user
+        # i think this work too so you don't have to loop
+        #self.update({'current_user': self.env.user.id})
+        return self.env.user.id
+
+    channel = fields.Char(string="Channel", default="Llamada")
     create_user_id = fields.Many2one('res.users', "Create User")
     priority_id = fields.Many2one('website.support.ticket.priority', default=_default_priority_id, string="Priority")
     parent_company_id = fields.Many2one(string="Parent Company", related="partner_id.company_id")
     partner_id = fields.Many2one('res.partner', string="Partner")
-    user_id = fields.Many2one('res.users', string="Assigned User")
+    user_id = fields.Many2one('res.users', string="Assigned User", default=_default_current_user_id,)
     person_name = fields.Char(string='Person Name')
     email = fields.Char(string="Email")
     phone = fields.Char(string="Phone")
@@ -98,7 +105,6 @@ class WebsiteSupportTicket(models.Model):
     sla_rule_id = fields.Many2one('website.support.sla.rule', string="SLA Rule")
     sla_alert_ids = fields.Many2many('website.support.sla.alert', string="SLA Alerts",
                                      help="Keep record of SLA alerts sent so we do not resend them")
-
     @api.one
     @api.depends('sla_timer')
     def _compute_sla_timer_format(self):

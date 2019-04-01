@@ -35,6 +35,7 @@
         'data/website.support.ticket.priority.xml',
         'data/website.support.settings.xml',
         'data/website.support.department.role.csv',
+        'data/website.support.ticket.tag.csv',
         'data/website.support.ticket.approval.xml',
         'data/ir.cron.xml',
         'security/ir.model.access.csv',

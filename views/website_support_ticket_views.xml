@@ -15,7 +15,7 @@
                     <button type="object" name="send_survey" string="Send Survey"/>
                     <button type="object" name="request_approval" string="Request Approval"/>
                 </header>
-                <sheet>
+                <sheet >
                     <group>
                         <label for="subject" class="oe_edit_only"/>
                         <h1><field name="subject"/></h1>
@@ -31,7 +31,7 @@
                             <field name="tag_ids" widget="many2many_tags"/>
                             <field name="category_id"/>
                             <field name="sub_category_id" domain="[('parent_category_id','=',category_id)]"/>
-                            <field name="user_id" domain="[('share','=',False)]"/>
+                            <field name="user_id" domain="[('share','=',False)]" />
                             <field name="state_id"/>
                             <field name="approval_id"/>
                         </group>
@@ -133,6 +133,7 @@
                 <field name="tag_ids"/>
                 <field name="partner_id"/>
                 <filter string="Unattended Tickets" name="unattended_tickets" domain="[('unattended', '=', True )]" />
+                <filter string="Mis Tickets" name="self_tickets" domain="[('user_id', '=', uid )]" />
                 <filter name="group_by_category" string="Category" domain="[]"  context="{'group_by':'category_id'}"/>
                 <filter name="group_by_user" string="User" domain="[]"  context="{'group_by':'user_id'}"/>
             </search>
@@ -156,13 +157,14 @@
             <tree colors="black:ticket_color==False">
                 <field name="create_user_id" invisible="True"/>
                 <field name="ticket_color" invisible="True"/>
-                <field name="create_date"/>
                 <field name="ticket_number"/>
-                <field name="priority_id"/>
-                <field name="state_id"/>
                 <field name="person_name"/>
-                <field name="category_id"/>
                 <field name="subject"/>
+                <field name="state_id"/>
+                <field name="category_id"/>
+                <field name="tag_ids" widget="many2many_tags" />
+                <field name="priority_id"/>
+                <field name="create_date"/>
                 <field name="sla_active"/>
                 <field name="sla_timer" widget="float_time"/>
             </tree>
