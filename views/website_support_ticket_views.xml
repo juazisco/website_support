@@ -13,7 +13,7 @@
                     <button type="object" name="pause_sla" string="Pause SLA" attrs="{'invisible' :['|', ('sla_active', '==', False ), ('sla_id','==', False)]}"/>
                     <button type="object" name="resume_sla" string="Resume SLA" attrs="{'invisible' :['|', ('sla_active', '!=', False ), ('sla_id','==', False)]}"/>
                     <button type="object" name="send_survey" string="Send Survey"/>
-                    <button type="object" name="request_approval" string="Request Approval"/>
+                    <button type="object" name="request_approval" string="Request Approval" invisible="True"/>
                 </header>
                 <sheet >
                     <group>
@@ -129,6 +129,9 @@
         <field name="arch" type="xml">
             <search>
                 <field name="ticket_number"/>
+                <field name="email"/>
+                <field name="person_name"/>
+                <field name="description"/>
                 <field name="subject"/>
                 <field name="tag_ids"/>
                 <field name="partner_id"/>
@@ -165,8 +168,9 @@
                 <field name="tag_ids" widget="many2many_tags" />
                 <field name="priority_id"/>
                 <field name="create_date"/>
-                <field name="sla_active"/>
-                <field name="sla_timer" widget="float_time"/>
+                <field name="user_id"/>
+                <field name="sla_active" invisible="True"/>
+                <field name="sla_timer" widget="float_time" invisible="True"/>
             </tree>
         </field>
     </record>
